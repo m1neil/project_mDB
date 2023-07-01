@@ -1,17 +1,3 @@
-/* Задания на урок:
-
-// 1) Удалить все рекламные блоки со страницы (правая часть сайта)
-
-// 2) Изменить жанр фильма, поменять "комедия" на "драма"
-
-// 3) Изменить задний фон постера с фильмом на изображение "bg.jpg". Оно лежит в папке img.
-// Реализовать только при помощи JS
-
-// 4) Список фильмов на странице сформировать на основании данных из этого JS файла.
-// Отсортировать их по алфавиту 
-
-// 5) Добавить нумерацию выведенных фильмов */
-
 'use strict';
 
 const movieDB = {
@@ -40,7 +26,7 @@ createMovieList(movieList, movieDB.movies);
 function createMovieList(movieContainer, data) {
 	movieContainer.innerHTML = '';
 
-	data.sort();
+	sortMovieList(data);
 
 	data.forEach((movie, i) => {
 		movieContainer.innerHTML += `
@@ -49,4 +35,49 @@ function createMovieList(movieContainer, data) {
          </li>
 		`;
 	});
+
+	const btnsDelete = movieContainer.querySelectorAll('.delete');
+
+	btnsDelete.forEach((btn, i) => {
+		btn.addEventListener('click', event => {
+			event.preventDefault();
+
+			btn.parentElement.remove();
+
+			data.splice(i, 1);
+
+			createMovieList(movieContainer, data);
+		});
+	});
 }
+
+function sortMovieList(arr) {
+	arr.sort();
+}
+
+const formAddMovie = document.querySelector('form.add');
+
+formAddMovie.addEventListener('submit', event => {
+	event.preventDefault();
+
+	const input = formAddMovie.querySelector('input.adding__input'),
+		inputLoveMovie = formAddMovie.querySelector('input[type=checkbox]');
+
+	if (!input.value) return;
+
+	if (inputLoveMovie.checked) {
+		console.log('Добавляем любимый фильм');
+	}
+
+	if (input.value.length > 21) {
+		input.value = `${input.value.substring(0, 21)}...`;
+	}
+
+	movieDB.movies.push(input.value);
+
+	createMovieList(movieList, movieDB.movies);
+
+	console.log(movieDB.movies);
+
+	event.target.reset();
+});
